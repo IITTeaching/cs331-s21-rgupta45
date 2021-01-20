@@ -22,7 +22,7 @@ def captured_output():
 
 # implement this function
 def is_perfect(n):
-    pass
+    return sum([x for x in range(1,n//2+1) if n % x == 0]) == n
 
 # (3 points)
 def test1():
@@ -40,7 +40,7 @@ def test1():
 
 # implement this function
 def multiples_of_3_and_5(n):
-    pass
+    return (n-1)//3 * ((n-1)//3 + 1)/2 * 3 + (n-1)//5 * ((n-1)//5 + 1)/2 * 5 - (n-1)//15 * ((n-1)//15 + 1)/2 * 15
 
 # (3 points)
 def test2():
@@ -53,7 +53,13 @@ def test2():
 # EXERCISE 3
 #################################################################################
 def integer_right_triangles(p):
-    pass
+    count = 0
+    for i in range(p//2):
+        for j in range((p-i)//2):
+            k = p - i - j
+            if k **2 + j **2 == i ** 2:
+                count+=1
+    return count
 
 def test3():
     tc = unittest.TestCase()
@@ -67,7 +73,12 @@ def test3():
 
 # implement this function
 def gen_pattern(chars):
-    pass
+    longest = 1 + 4 * (len(chars)-1) # Length of the message
+    chars = chars[::-1] # Reverse
+    for x in list(range(len(chars))) + list(range(len(chars)-2,-1,-1)): # Make it a palindrome ex: 0 1 2 1 0 
+        query = chars[:x+1] + chars[:x][::-1] # get the palindrome up to x. ex: abcd -> abcdcba
+        query = '.'.join(query).center(longest,'.')
+        print(query)
 
 def test4():
     with captured_output() as (out,err):
