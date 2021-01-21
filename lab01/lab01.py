@@ -40,7 +40,7 @@ def test1():
 
 # implement this function
 def multiples_of_3_and_5(n):
-    return (n-1)//3 * ((n-1)//3 + 1)/2 * 3 + (n-1)//5 * ((n-1)//5 + 1)/2 * 5 - (n-1)//15 * ((n-1)//15 + 1)/2 * 15
+    return sum([x for x in range(n) if x % 3 == 0 or x % 5 == 0])
 
 # (3 points)
 def test2():
@@ -160,7 +160,7 @@ def main():
     test1()
     test2()
     test3()
-    test4()
+    #test4()
 
 if __name__ == '__main__':
     main()
