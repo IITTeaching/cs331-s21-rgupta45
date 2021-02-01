@@ -17,15 +17,31 @@ def mysort(lst: List[T], compare: Callable[[T, T], int]) -> List[T]:
     right element, 1 if the left is larger than the right, and 0 if the two
     elements are equal.
     """
-    for x in range(1,len(lst)):
-        key = lst[x]
-        j = x - 1
-        while j >= 0 and compare(key, lst[j]) == -1:
-            lst[j + 1] = lst[j]
-            j -= 1
-        lst[j + 1] = key
+    #Insertion Sort
+    #Merge Sort
+    if len(lst) > 1:
+        mid = len(lst) // 2
+        left = lst[:mid]
+        right = lst[mid:]
+        left = mysort(left, compare)
+        right = mysort(right, compare)
+        ans = []
+        i, j = 0,0
+        while i < len(left) and j < len(right):
+            if compare(left[i],right[j]) == -1:
+                ans.append(left[i])
+                i += 1
+            else:
+                ans.append(right[j])
+                j += 1
+        while i < len(left):
+            ans.append(left[i])
+            i += 1
+        while j < len(right):
+            ans.append(right[j])
+            j += 1
+        return ans
     return lst
-
 def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     """
     This method search for elem in lst using binary search.
@@ -38,12 +54,16 @@ def mybinsearch(lst: List[T], elem: S, compare: Callable[[T, S], int]) -> int:
     right = len(lst) - 1
     while left < right:
         mid = (left + right) // 2
-        print(elem, lst,left,right,mid)
+        #print(elem, lst,left,right,mid)
         if compare(lst[mid],elem) == -1:
             left = mid + 1
-        else:
+        elif compare(lst[mid],elem) == 1:
             right = mid - 1
-        print(elem, lst,left,right,mid)
+        elif right != left:
+            right = mid
+        else:
+            return mid
+        #print(elem, lst,left,right,mid)
     return left if compare(lst[left],elem) == 0 else -1
 
 class Student():
@@ -125,11 +145,15 @@ def test1_5():
 class PrefixSearcher():
 
     def __init__(self, document, k):
-        """
-        Initializes a prefix searcher using a document and a maximum
-        search string length k.
-        """
-        pass
+        self.k = k
+        self.document = document
+        lst = []
+        for x in range(len(document) - (k-1)):
+            lst.append(document[x:x+k])
+        for x in range(len(document)- (k-1),len(document)):
+            lst.append(document[x:])
+        self.list = mysort(lst, lambda x,y: 0 if x == y else (-1 if x < y else 1))
+        #print(lst)
 
     def search(self, q):
         """
@@ -138,7 +162,11 @@ class PrefixSearcher():
         length up to n). If q is longer than n, then raise an
         Exception.
         """
-        pass
+        if len(q) > self.k:
+            raise ValueError
+        #print(mybinsearch(self.list, q, lambda x,y: 0 if x == y else (-1 if x < y else 1)), q)
+        return mybinsearch(self.list, q, lambda x,y: 0 if x[:min(len(x),len(y))] == y else (-1 if x[:min(len(x),len(y))] < y else 1)) != -1
+        
 
 # 30 Points
 def test2():
@@ -180,20 +208,23 @@ class SuffixArray():
         """
         Creates a suffix array for document (a string).
         """
-        pass
+        self.document = document
+        lst = list(range(1,len(document)))
+        self.lst = mysort(lst, lambda x,y: 0 if document[x:] == document[y:] else (-1 if document[x:] < document[y:] else 1))
+        #print(self.lst)
 
 
     def positions(self, searchstr: str):
         """
         Returns all the positions of searchstr in the documented indexed by the suffix array.
         """
-        pass
+        return [mybinsearch(self.lst, searchstr, lambda x,y: 0 if self.document[x:][:min(len(self.document)-x,len(y))] == y else (-1 if self.document[x:] < y else 1))]
 
     def contains(self, searchstr: str):
         """
         Returns true of searchstr is coontained in document.
         """
-        pass
+        return mybinsearch(self.lst, searchstr, lambda x,y: 0 if self.document[x:][:min(len(self.document)-x,len(y))] == y else (-1 if self.document[x:] < y else 1)) != -1
 
 # 40 Points
 def test3():
