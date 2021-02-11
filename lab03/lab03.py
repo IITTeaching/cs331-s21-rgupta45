@@ -209,7 +209,7 @@ class SuffixArray():
         Creates a suffix array for document (a string).
         """
         self.document = document
-        lst = list(range(1,len(document)))
+        lst = list(range(0,len(document)))
         self.lst = mysort(lst, lambda x,y: 0 if document[x:] == document[y:] else (-1 if document[x:] < document[y:] else 1))
         #print(self.lst)
 
