@@ -114,6 +114,7 @@ class ArrayList:
     ### stringification ###
 
     def __str__(self):
+        return str([self.data[x] for x in range(len(self.data))])
         """Implements `str(self)`. Returns '[]' if the list is empty, else
         returns `str(x)` for all values `x` in this list, separated by commas
         and enclosed by square brackets. E.g., for a list containing values
@@ -122,6 +123,7 @@ class ArrayList:
         ### END SOLUTION
 
     def __repr__(self):
+        return self.__str__()
         """Supports REPL inspection. (Same behavior as `str`.)"""
         ### BEGIN SOLUTION
         ### END SOLUTION
@@ -131,27 +133,38 @@ class ArrayList:
 
     def append(self, value):
         """Appends value to the end of this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        length = len(self.data)
+        self.data.append(None)
+        self.data[length] = value
 
     def insert(self, idx, value):
         """Inserts value at position idx, shifting the original elements down the
         list, as needed. Note that inserting a value at len(self) --- equivalent
         to appending the value --- is permitted. Raises IndexError if idx is invalid."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        length = len(self.data)
+        self.data.append(None)
+        for x in range(length,idx,-1):
+            self.data[x] = self.data[x-1]
+        self.data[idx] = value
 
     def pop(self, idx=-1):
         """Deletes and returns the element at idx (which is the last element,
         by default)."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        x = self.data[idx]
+        idx = self._normalize_idx(idx)
+        for i in range(idx+1, len(self.data)):
+                self.data[i-1] = self.data[i]
+        del self.data[len(self.data)-1]
+        return x
 
     def remove(self, value):
         """Removes the first (closest to the front) instance of value from the
         list. Raises a ValueError if value is not found in the list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for x in range(len(self.data)):
+            if self.data[x] == value:
+                self.pop(x)
+                return
+        raise ValueError
 
 
     ### predicates (T/F queries) ###
@@ -159,44 +172,63 @@ class ArrayList:
     def __eq__(self, other):
         """Returns True if this ArrayList contains the same elements (in order) as
         other. If other is not an ArrayList, returns False."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        if not isinstance(other, ArrayList) or len(other) != len(self):
+            return False
+        for x in range(len(self)):
+            if other[x] != self[x]:
+                return False
+        return True
 
     def __contains__(self, value):
         """Implements `val in self`. Returns true if value is found in this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for x in range(len(self)):
+            if self.data[x] == value:
+                return True
+        return False
 
 
     ### queries ###
 
     def __len__(self):
         """Implements `len(self)`"""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        return len(self.data)
 
     def min(self):
         """Returns the minimum value in this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        min = self.data[0]
+        for x in range(1,len(self.data)):
+          if self.data[x] < min:
+            min = self.data[x]
+        return min
 
     def max(self):
         """Returns the maximum value in this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        max = self.data[0]
+        for x in range(1,len(self.data)):
+          if self.data[x] > max:
+            max = self.data[x]
+        return max
 
     def index(self, value, i=0, j=None):
         """Returns the index of the first instance of value encountered in
         this list between index i (inclusive) and j (exclusive). If j is not
         specified, search through the end of the list for value. If value
         is not in the list, raise a ValueError."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        if j == None:
+            j = len(self.data)
+        j = self._normalize_idx(j)
+        for x in range(i,j):
+            if self.data[x] == value:
+                return x
+        raise ValueError
 
     def count(self, value):
         """Returns the number of times value appears in this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        c = 0
+        for x in range(len(self.data)):
+          if self.data[x] == value:
+            c += 1
+        return c
 
 
     ### bulk operations ###
@@ -205,8 +237,12 @@ class ArrayList:
         """Implements `self + other_array_list`. Returns a new ArrayList
         instance that contains the values in this list followed by those
         of other."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        arr = ArrayList()
+        for x in range(len(self.data)):
+          arr.append(self.data[x])
+        for x in range(len(other.data)):
+          arr.append(other.data[x])
+        return arr
 
     def clear(self):
         self.data = ConstrainedList() # don't change this!
@@ -214,21 +250,23 @@ class ArrayList:
     def copy(self):
         """Returns a new ArrayList instance (with a separate data store), that
         contains the same values as this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        arr = ArrayList()
+        for x in range(len(self.data)):
+          arr.append(self.data[x])
+        return arr
 
     def extend(self, other):
         """Adds all elements, in order, from other --- an Iterable --- to this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for x in other:
+          self.append(x)
 
 
     ### iteration ###
 
     def __iter__(self):
         """Supports iteration (via `iter(self)`)"""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for x in range(len(self.data)):
+            yield self.data[x]
 
 ################################################################################
 # TEST CASES
@@ -280,6 +318,7 @@ def test_case_1():
         tc.assertEqual(lst[i], data[i])
 
     for i in range(0, -len(data), -1):
+        print(lst,data)
         tc.assertEqual(lst[i], data[i])
     suc()
 
