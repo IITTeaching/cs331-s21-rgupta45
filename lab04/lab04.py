@@ -112,7 +112,7 @@ class ArrayList:
     ### stringification ###
 
     def __str__(self):
-        return str([self.data[x] for x in range(len(self.data))])
+        return str([self.data[x] for x in range(self.len)])
         """Implements `str(self)`. Returns '[]' if the list is empty, else
         returns `str(x)` for all values `x` in this list, separated by commas
         and enclosed by square brackets. E.g., for a list containing values
@@ -131,16 +131,22 @@ class ArrayList:
 
     def append(self, value):
         """Appends value to the end of this list."""
-        length = len(self.data)
-        self.data.append(None)
-        self.data[length] = value
+        if self.len == 0:
+            self.data = ConstrainedList(1)
+        if len(self.data) == self.len:
+            newlist = ConstrainedList(self.len * 2)
+            for i in range(0,self.len):
+                newlist[i] = self.data[i]
+            self.data = newlist
+        self.data[self.len] = value
+        self.len += 1
 
     def insert(self, idx, value):
         """Inserts value at position idx, shifting the original elements down the
         list, as needed. Note that inserting a value at len(self) --- equivalent
         to appending the value --- is permitted. Raises IndexError if idx is invalid."""
-        length = len(self.data)
-        self.data.append(None)
+        length = self.len
+        self.append(None)
         for x in range(length,idx,-1):
             self.data[x] = self.data[x-1]
         self.data[idx] = value
@@ -150,15 +156,16 @@ class ArrayList:
         by default)."""
         x = self.data[idx]
         idx = self._normalize_idx(idx)
-        for i in range(idx+1, len(self.data)):
+        for i in range(idx+1, len(self)):
                 self.data[i-1] = self.data[i]
-        del self.data[len(self.data)-1]
+        self.data[len(self)-1] = None
+        self.len -= 1
         return x
 
     def remove(self, value):
         """Removes the first (closest to the front) instance of value from the
         list. Raises a ValueError if value is not found in the list."""
-        for x in range(len(self.data)):
+        for x in range(len(self)):
             if self.data[x] == value:
                 self.pop(x)
                 return
@@ -189,12 +196,12 @@ class ArrayList:
 
     def __len__(self):
         """Implements `len(self)`"""
-        return len(self.data)
+        return self.len
 
     def min(self):
         """Returns the minimum value in this list."""
         min = self.data[0]
-        for x in range(1,len(self.data)):
+        for x in range(1,self.len):
           if self.data[x] < min:
             min = self.data[x]
         return min
@@ -202,7 +209,7 @@ class ArrayList:
     def max(self):
         """Returns the maximum value in this list."""
         max = self.data[0]
-        for x in range(1,len(self.data)):
+        for x in range(1,self.len):
           if self.data[x] > max:
             max = self.data[x]
         return max
@@ -213,7 +220,7 @@ class ArrayList:
         specified, search through the end of the list for value. If value
         is not in the list, raise a ValueError."""
         if j == None:
-            j = len(self.data)
+            j = self.len
         j = self._normalize_idx(j)
         for x in range(i,j):
             if self.data[x] == value:
@@ -223,7 +230,7 @@ class ArrayList:
     def count(self, value):
         """Returns the number of times value appears in this list."""
         c = 0
-        for x in range(len(self.data)):
+        for x in range(self.len):
           if self.data[x] == value:
             c += 1
         return c
@@ -236,7 +243,7 @@ class ArrayList:
         instance that contains the values in this list followed by those
         of other."""
         arr = ArrayList()
-        for x in range(len(self.data)):
+        for x in range(self.len):
           arr.append(self.data[x])
         for x in range(len(other.data)):
           arr.append(other.data[x])
@@ -250,7 +257,7 @@ class ArrayList:
         """Returns a new ArrayList instance (with a separate data store), that
         contains the same values as this list."""
         arr = ArrayList()
-        for x in range(len(self.data)):
+        for x in range(self.len):
           arr.append(self.data[x])
         return arr
 
@@ -264,7 +271,7 @@ class ArrayList:
 
     def __iter__(self):
         """Supports iteration (via `iter(self)`)"""
-        for x in range(len(self.data)):
+        for x in range(self.len):
             yield self.data[x]
 
 ################################################################################
@@ -317,7 +324,7 @@ def test_case_1():
         tc.assertEqual(lst[i], data[i])
 
     for i in range(0, -len(data), -1):
-        print(lst,data)
+        #print(lst,data)
         tc.assertEqual(lst[i], data[i])
     suc()
 
