@@ -120,6 +120,8 @@ class LinkedList:
         node.prior.next = node.next
         node.next.prior = node.prior
         self.cursor = self.cursor.next
+        if self.cursor == self.head:
+            self.cursor = self.head.next
         self.length -= 1
 
     ### stringification ###
@@ -151,12 +153,6 @@ class LinkedList:
         idx = self._normalize_idx(idx)
         if idx > self.length:
             raise IndexError
-        elif idx == self.length:
-            self.append(value)
-            return
-        elif idx == 0:
-            self.prepend(value)
-            return
         node = self.head
         for _ in range(idx+1):
             node = node.next
@@ -222,7 +218,7 @@ class LinkedList:
 
     def min(self):
         """Returns the minimum value in this list."""
-        minval = self.head.next
+        minval = self.head.next.val
         node = self.head
         for _ in range(len(self)):
             node = node.next
@@ -232,7 +228,7 @@ class LinkedList:
 
     def max(self):
         """Returns the maximum value in this list."""
-        maxval = self.head.next
+        maxval = self.head.next.val
         node = self.head
         for _ in range(len(self)):
             node = node.next
@@ -245,13 +241,21 @@ class LinkedList:
         this list between index i (inclusive) and j (exclusive). If j is not
         specified, search through the end of the list for value. If value
         is not in the list, raise a ValueError."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        if j == None:
+            j = len(self)
+        j = self._normalize_idx(j)
+        for x in range(i,j):
+            if self[x] == value:
+                return x
+        raise ValueError
 
     def count(self, value):
         """Returns the number of times value appears in this list."""
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        c = 0
+        for val in self:
+            if val == value:
+                c += 1
+        return c
 
     ### bulk operations ###
 
@@ -261,7 +265,6 @@ class LinkedList:
         of other."""
         assert(isinstance(other, LinkedList))
         c = self.copy()
-        #print(c, "this is copy")
         for value in other:
             c.append(value)
         return c
@@ -304,8 +307,12 @@ class LinkedList:
 
         E.g., for [1,2,3] you shoudl return [3,2,1].
         """
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        c = LinkedList()
+        node = self.head
+        for _ in range(len(self)):
+            node = node.prior
+            c.append(node.val)
+        return c
     def to_list(self):
         return [value for value in self]
 
@@ -427,11 +434,8 @@ def test_custor_based_access():
         offset = random.randrange(-200, 200)
         idx = (idx + offset) % len(lst1)
         lst2.cursor_move(offset)
-        print(lst2.cursor.val == lst1[idx])
-        print(lst2.cursor.val, lst1[idx-5:idx+5])
         del lst1[idx]
         lst2.cursor_delete()
-        print(lst2.to_list() == lst1,offset)
 
     assert len(lst1) == len(lst2)
     for i in range(len(lst1)):
