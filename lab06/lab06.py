@@ -50,8 +50,14 @@ def check_delimiters(expr):
     delim_openers = '{([<'
     delim_closers = '})]>'
 
-    ### BEGIN SOLUTION
-    ### END SOLUTION
+    stack = Stack()
+    for char in expr:
+        if char in delim_openers:
+            stack.push(char)
+        elif char in delim_closers:
+            if stack.empty() or delim_closers.index(char) != delim_openers.index(stack.pop()):
+                return False
+    return stack.empty()
 
 ################################################################################
 # CHECK DELIMITERS - TEST CASES
@@ -120,8 +126,25 @@ def infix_to_postfix(expr):
     ops = Stack()
     postfix = []
     toks = expr.split()
-    ### BEGIN SOLUTION
-    ### END SOLUTION
+    for tok in toks:
+        if tok in prec:
+            if ops:
+                top = ops.peek()
+                if top != '(' and prec[top] >= prec[tok]:
+                    postfix.append(top)
+                    ops.pop()
+            ops.push(tok)
+        elif tok == '(':
+            ops.push(tok)
+        elif tok == ')':
+            top = ops.pop()
+            while top != '(' and ops:
+                postfix.append(top)
+                top = ops.pop()
+        else:
+            postfix.append(tok)
+    while ops:
+        postfix.append(ops.pop())
     return ' '.join(postfix)
 
 ################################################################################
@@ -144,7 +167,6 @@ def test_infix_to_postfix_2():
     tc.assertEqual(infix_to_postfix('1 / 2 + 3 * 4'), '1 2 / 3 4 * +')
     tc.assertEqual(infix_to_postfix('1 * 2 * 3 + 4'), '1 2 * 3 * 4 +')
     tc.assertEqual(infix_to_postfix('1 + 2 * 3 * 4'), '1 2 3 * 4 * +')
-
 # points: 10
 def test_infix_to_postfix_3():
     tc = TestCase()
@@ -165,21 +187,37 @@ class Queue:
     ### END SOLUTION
 
     def enqueue(self, val):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        if self.tail == len(self.data) - 1:
+            if self.head == 0:
+                raise RuntimeError
+            else:
+                arr = self.data[self.head: self.tail + 1]
+                self.head, self.tail = 0, len(arr) - 1
+                arr += [None] * (len(self.data) - len(arr))
+                self.data = arr
+        self.tail += 1
+        if self.head == -1:
+            self.head = 0
+        self.data[self.tail] = val
 
     def dequeue(self):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
-
+        if not self:
+            raise RuntimeError
+        ret = self.data[self.head]
+        self.data[self.head] = None
+        self.head += 1
+        if self.head > self.tail:
+            self.head, self.tail = -1, -1
+        return ret
     def resize(self, newsize):
         assert(len(self.data) < newsize)
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        arr = self.data[self.head: self.tail + 1]
+        self.head, self.tail = 0, len(arr) - 1
+        arr += [None] * (newsize - len(arr))
+        self.data = arr
 
     def empty(self):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        return self.head == -1 and self.tail == -1
 
     def __bool__(self):
         return not self.empty()
@@ -193,8 +231,8 @@ class Queue:
         return str(self)
 
     def __iter__(self):
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        for x in range(self.head, self.tail + 1):
+            yield self.data[x]
 
 ################################################################################
 # QUEUE IMPLEMENTATION - TEST CASES
