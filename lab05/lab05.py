@@ -46,16 +46,10 @@ class LinkedList:
         if idx >= self.length:
             raise IndexError
         node = self.head
-<<<<<<< HEAD
         for _ in range(idx+1):
             node = node.next
         return node.val
 
-=======
-        for _ in range(idx + 1):
-            node = node.next
-        return node.val
->>>>>>> 4d656e6af08aed2e13617ac3a9b1baf91bef8d2d
     def __setitem__(self, idx, value):
         """Implements `self[idx] = x`"""
         assert(isinstance(idx, int))
@@ -89,11 +83,7 @@ class LinkedList:
 
     def cursor_set(self, idx):
         """sets the cursor to the node at the provided index"""
-<<<<<<< HEAD
-        print(idx,len(self))
-=======
         #print(idx,len(self))
->>>>>>> 4d656e6af08aed2e13617ac3a9b1baf91bef8d2d
         self.cursor = self.head
         for _ in range(idx+1):
             self.cursor = self.cursor.next
@@ -128,17 +118,11 @@ class LinkedList:
         following node"""
         assert self.cursor is not self.head and len(self) > 0
         node = self.cursor
-<<<<<<< HEAD
-        self.cursor = self.cursor.next
-        node.prior.next = node.next
-        node.next.prior = node.prior
-=======
         node.prior.next = node.next
         node.next.prior = node.prior
         self.cursor = self.cursor.next
         if self.cursor == self.head:
             self.cursor = self.head.next
->>>>>>> 4d656e6af08aed2e13617ac3a9b1baf91bef8d2d
         self.length -= 1
 
     ### stringification ###
@@ -168,27 +152,14 @@ class LinkedList:
         to appending the value --- is permitted. Raises IndexError if idx is invalid."""
         assert(isinstance(idx, int))
         idx = self._normalize_idx(idx)
-<<<<<<< HEAD
-        if idx == 0 and len(self) == 0:
-            self.append(value)
-            return
-        if idx >= self.length:
-=======
         if idx > self.length:
->>>>>>> 4d656e6af08aed2e13617ac3a9b1baf91bef8d2d
             raise IndexError
         node = self.head
         for _ in range(idx+1):
             node = node.next
         n = LinkedList.Node(value, prior=node.prior, next=node)
-<<<<<<< HEAD
-        node.prior.next = node.prior = n
-        self.length += 1
-
-=======
         n.prior.next = n.next.prior = n
         self.length += 1
->>>>>>> 4d656e6af08aed2e13617ac3a9b1baf91bef8d2d
     def pop(self, idx=-1):
         """Deletes and returns the element at idx (which is the last element,
         by default)."""
