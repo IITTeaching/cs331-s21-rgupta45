@@ -314,8 +314,6 @@ class LinkedList:
             node = node.prior
             c.append(node.val)
         return c
-    def to_list(self):
-        return [value for value in self]
 
 
 ################################################################################
