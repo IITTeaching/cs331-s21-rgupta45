@@ -50,15 +50,24 @@ class HBStree:
         Returns key if key exists in the current version of the tree. Raise a
         KeyError, if key does not exist.
         """
-        # BEGIN SOLUTION
-        # END SOLUTION
+        head = self.root_versions[-1]
+        while head:
+            if key == head.val: return key
+            elif key < head.val: head = head.left
+            else: head = head.right
+        raise KeyError
 
     def __contains__(self, el):
         """
         Return True if el exists in the current version of the tree.
         """
-        # BEGIN SOLUTION
-        # END SOLUTION
+        head = self.root_versions[-1]
+        while head:
+            if el == head.val: return True
+            elif el < head.val: head = head.left
+            else: head = head.right
+        return False
+
 
     def insert(self,key):
         """
@@ -66,13 +75,38 @@ class HBStree:
         tree. If key already exists, then do nothing and refrain
         from creating a new version.
         """
-        # BEGIN SOLUTION
-        # END SOLUTION
+        if self.root_versions[-1] == None:
+            self.root_versions.append(HBStree.INode(key, None, None))
+        elif key not in self:
+            def recurse(node, key):
+                if key < node.val:
+                    return HBStree.INode(node.val, recurse(node.left, key) if node.left else HBStree.INode(key, None, None), node.right)
+                return HBStree.INode(node.val, node.left, recurse(node.right, key) if node.right else HBStree.INode(key, None, None))
+            self.root_versions.append(recurse(self.root_versions[-1], key))
+
 
     def delete(self,key):
         """Delete key from the tree, creating a new version of the tree. If key does not exist in the current version of the tree, then do nothing and refrain from creating a new version."""
-        # BEGIN SOLUTION
-        # END SOLUTION
+        def recurse(node, key):
+            if key < node.val:
+                return HBStree.INode(node.val, recurse(node.left, key), node.right)
+            elif key > node.val:
+                return HBStree.INode(node.val, node.left, recurse(node.right, key))
+            else:
+                if node.left and node.right:
+                    greatest = node.left
+                    while greatest.right:
+                        greatest = greatest.right
+                    return HBStree.INode(greatest.val, recurse(node, greatest.val), node.right)
+                elif node.left: return node.left
+                elif node.right: return node.right
+                return None
+                    
+        head = self.root_versions[-1]
+        if not head.left and not head.right:
+            self.root_versions.append(None)
+        elif key in self:
+            self.root_versions.append(recurse(self.root_versions[-1], key))
 
     @staticmethod
     def subtree_size(node):
@@ -139,11 +173,20 @@ class HBStree:
         version of the tree. Parameter timetravel determines how many versions
         we should go back. The default 0 accesses the current version of the
         BS-tree.
-        """
+        """        
         if timetravel < 0 or timetravel >= len(self.root_versions):
             raise IndexError(f"valid versions for time travel are 0 to {len(self.root_versions) -1}, but was {timetravel}")
-        # BEGIN SOLUTION
-        # END SOLUTION
+        if self.root_versions[-1 - timetravel] == None:
+            return
+        def recurse(node):
+            if node.left:
+                yield from recurse(node.left)
+            yield node.val
+            if node.right:
+                yield from recurse(node.right)
+        yield from recurse(self.root_versions[-1 - timetravel])
+            
+
 
     @staticmethod
     def stringify_subtree(root):
