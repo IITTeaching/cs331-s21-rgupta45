@@ -14,6 +14,7 @@ class AVLTree:
             self.left, n.left, self.right, n.right = n.left, n.right, n, self.right
 
         def rotate_left(self):
+            pass
             ### BEGIN SOLUTION
             ### END SOLUTION
 
@@ -30,15 +31,18 @@ class AVLTree:
 
     @staticmethod
     def rebalance(t):
+        pass
         ### BEGIN SOLUTION
         ### END SOLUTION
 
     def add(self, val):
+        pass
         assert(val not in self)
         ### BEGIN SOLUTION
         ### END SOLUTION
 
     def __delitem__(self, val):
+        pass
         assert(val in self)
         ### BEGIN SOLUTION
         ### END SOLUTION
