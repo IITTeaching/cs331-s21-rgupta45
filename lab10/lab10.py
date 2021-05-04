@@ -14,9 +14,9 @@ class AVLTree:
             self.left, n.left, self.right, n.right = n.left, n.right, n, self.right
 
         def rotate_left(self):
-            pass
-            ### BEGIN SOLUTION
-            ### END SOLUTION
+            n = self.right
+            self.val, n.val = n.val, self.val
+            self.right, n.right, self.left, n.left = n.right, n.left, n, self.left
 
         @staticmethod
         def height(n):
@@ -31,21 +31,62 @@ class AVLTree:
 
     @staticmethod
     def rebalance(t):
-        pass
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        balancefactor = lambda node: AVLTree.Node.height(node.right) - AVLTree.Node.height(node.left)
+        bal = balancefactor(t)
+        if bal <= -1:
+            if balancefactor(t.left) >= 1:
+                t.left.rotate_left()
+            t.rotate_right()
+            AVLTree.rebalance(t.right)
+        elif bal >= 1:
+            if balancefactor(t.right) <= -1:
+                t.right.rotate_right()
+            t.rotate_left()
+            AVLTree.rebalance(t.left)
 
     def add(self, val):
-        pass
         assert(val not in self)
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        def recurse(node, val):
+            if val < node.val:
+                if node.left:
+                    recurse(node.left,val)
+                else:
+                    node.left = AVLTree.Node(val)
+            else:
+                if node.right:
+                    recurse(node.right,val)
+                else:
+                    node.right = AVLTree.Node(val)
+            AVLTree.rebalance(node)
+        if self:
+            recurse(self.root, val)
+            self.rebalance(self.root)
+        else:
+            self.root = AVLTree.Node(val)
+        self.size += 1
 
     def __delitem__(self, val):
-        pass
         assert(val in self)
-        ### BEGIN SOLUTION
-        ### END SOLUTION
+        def recurse(node, key):
+            if key < node.val:
+                node.left = recurse(node.left, key)
+            elif key > node.val:
+                node.right = recurse(node.right, key)
+            else:
+                if node.left and node.right:
+                    greatest = node.left
+                    while greatest.right:
+                        greatest = greatest.right
+                    node.val = greatest.val
+                    node.left = recurse(node.left, greatest.val)
+                elif node.left: return node.left
+                elif node.right: return node.right
+                else: return None
+            AVLTree.rebalance(node)
+            return node
+        self.root = recurse(self.root, val)
+        self.size -= 1
+
 
     def __contains__(self, val):
         def contains_rec(node):
@@ -58,6 +99,9 @@ class AVLTree:
             else:
                 return True
         return contains_rec(self.root)
+
+
+        
 
     def __len__(self):
         return self.size
@@ -179,7 +223,6 @@ def test_key_order_after_ops():
     for _ in range(len(vals) // 3):
         to_rem = vals.pop(random.randrange(len(vals)))
         del t[to_rem]
-
     vals.sort()
 
     for i,val in enumerate(t):
