@@ -1,11 +1,13 @@
 import urllib
 import requests
 
-def radix_a_book(book_url='https://www.gutenberg.org/files/84/84-0.txt'):
+def book_to_words(book_url='https://www.gutenberg.org/files/84/84-0.txt'):
     booktxt = urllib.request.urlopen(book_url).read().decode()
     bookascii = booktxt.encode('ascii','replace')
-    words = bookascii.split()
-    #test = sorted([str(word, 'utf-8') for word in words])
+    return bookascii.split()
+
+def radix_a_book(book_url='https://www.gutenberg.org/files/84/84-0.txt'):
+    words = book_to_words()
     maxlength = len(max(words, key = lambda x: len(x)))
     for i in range(len(words)):
         words[i] += bytes(maxlength - len(words[i]))
