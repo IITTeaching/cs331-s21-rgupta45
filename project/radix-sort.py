@@ -27,6 +27,6 @@ def radix_a_book(book_url='https://www.gutenberg.org/files/84/84-0.txt'):
         return ans
     for i in range(1,maxlength + 1):
         words = radix_sort(words,i)
-    words = [str(word, 'utf-8').rstrip('\x00') for word in words]
+    words = [str(word, 'utf-8').rstrip('\x00').encode('ascii','replace') for word in words]
     return words
 radix_a_book()
