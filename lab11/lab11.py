@@ -10,16 +10,17 @@ def qsort(lst,low,high,pivot_fn):
         qsort(lst, low, part, pivot_fn)
         qsort(lst, part + 1, high, pivot_fn)
 def partition(lst, low, high, pivot_fn):
-    pivotidx = lst[pivot_fn(lst, low, high)]
+    pivotidx = pivot_fn(lst, low, high)
     pivot = lst[pivotidx]
     lst[low], lst[pivotidx], pivotidx = lst[pivotidx], lst[low], low
     i, j = low, high
     while i < j:
-        while lst[i] < pivot:
+        while i <= j and lst[i] <= pivot:
             i += 1
-        while lst[j] > pivot:
+        while i <= j and lst[j] > pivot:
             j -= 1
-        lst[i], lst[j] = lst[j], lst[i]
+        if i < j:
+            lst[i], lst[j] = lst[j], lst[i]
     lst[low], lst[j] = lst[j], lst[low]
     return j
     
